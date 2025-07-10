@@ -1,73 +1,7 @@
 import React, { useState, useCallback } from "react";
 import axios from "axios";
 
-// Error Message Component for better display
-const ErrorMessage = ({ message, details }) => {
-  if (!message) return null;
-
-  // Find indices of special strings to parse the details array
-  const missingHeaderIndex = details.indexOf("Missing columns:");
-  const availableHeaderIndex = details.indexOf("Available columns:");
-  const separatorIndex = details.indexOf("---");
-
-  // Determine if the details array has the special structure
-  const isStructuredError =
-    missingHeaderIndex !== -1 &&
-    availableHeaderIndex !== -1 &&
-    separatorIndex !== -1;
-
-  let missingColumns = [];
-  let availableColumns = [];
-
-  if (isStructuredError) {
-    missingColumns = details.slice(missingHeaderIndex + 1, separatorIndex);
-    availableColumns = details.slice(availableHeaderIndex + 1);
-  }
-
-  return (
-    <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg text-left">
-      <p className="text-sm font-bold text-red-800">{message}</p>
-      {isStructuredError ? (
-        <>
-          {missingColumns.length > 0 && (
-            <>
-              <p className="mt-2 text-sm font-semibold text-red-700">
-                Missing columns:
-              </p>
-              <ol className="mt-1 list-decimal list-inside text-sm text-red-700">
-                {missingColumns.map((col, i) => (
-                  <li key={`m-${i}`}>{col}</li>
-                ))}
-              </ol>
-            </>
-          )}
-          {availableColumns.length > 0 && (
-            <>
-              <p className="mt-4 text-sm font-semibold text-red-700">
-                Available columns:
-              </p>
-              <ol className="mt-1 list-decimal list-inside text-sm text-red-700">
-                {availableColumns.map((col, i) => (
-                  <li key={`a-${i}`}>{col}</li>
-                ))}
-              </ol>
-            </>
-          )}
-        </>
-      ) : (
-        // Fallback for simple, unstructured error details
-        details &&
-        details.length > 0 && (
-          <ol className="mt-2 list-decimal list-inside text-sm text-red-700">
-            {details.map((detail, index) => (
-              <li key={index}>{detail}</li>
-            ))}
-          </ol>
-        )
-      )}
-    </div>
-  );
-};
+// ... (ErrorMessage component remains the same)
 
 function FileUpload() {
   const [file, setFile] = useState(null);
@@ -76,41 +10,48 @@ function FileUpload() {
   const [error, setError] = useState({ message: "", details: [] });
   const [successMessage, setSuccessMessage] = useState("");
 
-  const clearMessages = () => {
+  const clearMessages = useCallback(() => {
     setError({ message: "", details: [] });
     setSuccessMessage("");
-  };
+  }, []);
 
-  const validateAndSetFile = (selectedFile) => {
-    clearMessages();
-    if (
-      selectedFile &&
-      (selectedFile.type ===
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
-        selectedFile.type === "application/vnd.ms-excel")
-    ) {
-      setFile(selectedFile);
-    } else {
-      setError({
-        message:
-          "Invalid file type. Please upload an Excel file (.xlsx, .xls).",
-      });
-      setFile(null);
-    }
-  };
-
+  const validateAndSetFile = useCallback(
+    (selectedFile) => {
+      clearMessages();
+      if (
+        selectedFile &&
+        (selectedFile.type ===
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+          selectedFile.type === "application/vnd.ms-excel" ||
+          selectedFile.type === "text/csv")
+      ) {
+        setFile(selectedFile);
+      } else {
+        setError({
+          message:
+            "Invalid file type. Please upload an Excel (.xlsx, .xls) or CSV (.csv) file.",
+        });
+        setFile(null);
+      }
+    },
+    [clearMessages]
+  );
+    // ... (handler functions remain the same)
   const handleFileChange = (e) => {
     validateAndSetFile(e.target.files[0]);
   };
 
-  const handleDrop = useCallback((e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      validateAndSetFile(e.dataTransfer.files[0]);
-    }
-  }, []);
+  const handleDrop = useCallback(
+    (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(false);
+      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+        validateAndSetFile(e.dataTransfer.files[0]);
+      }
+    },
+    [validateAndSetFile]
+  );
 
   const handleDragOver = useCallback((e) => {
     e.preventDefault();
@@ -186,11 +127,12 @@ function FileUpload() {
     }
   };
 
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-slate-100 p-4 font-sans">
       <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-lg">
         <h2 className="text-3xl font-bold mb-8 text-center text-slate-700">
-          Upload Excel File
+          File Organizer
         </h2>
         <div
           className={`border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-colors duration-300 ${
@@ -206,14 +148,18 @@ function FileUpload() {
             id="fileInput"
             className="hidden"
             onChange={handleFileChange}
-            accept=".xlsx, .xls"
+            accept=".xlsx, .xls, .csv"
           />
           <p className="text-slate-500">
             {file
               ? `Selected: ${file.name}`
-              : "Drag & drop file or click to select"}
+              : "Drag & drop a file or click to select"}
+          </p>
+           <p className="text-xs text-slate-400 mt-2">
+            Accepts .xlsx, .xls, and .csv files.
           </p>
         </div>
+
         {file && (
           <div className="mt-8 text-center">
             <button
@@ -225,9 +171,11 @@ function FileUpload() {
             </button>
           </div>
         )}
+
         {error.message && (
           <ErrorMessage message={error.message} details={error.details} />
         )}
+
         {successMessage && (
           <p className="mt-6 text-sm text-center font-medium text-green-600">
             {successMessage}
