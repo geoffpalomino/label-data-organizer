@@ -100,12 +100,12 @@ function PasswordPrompt({ onPasswordCorrect }) {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-slate-100 p-4 font-sans">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-bg p-4 font-sans">
       <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
-        <h2 className="text-3xl font-bold mb-8 text-center text-slate-700">
-          Brevo Contacts Organizer
+        <h2 className="text-3xl font-bold mb-8 text-center text-text">
+          Label Data Organizer
         </h2>
-        <p className="text-center text-slate-500 mb-6">
+        <p className="text-center text-text mb-6">
           Please enter the password to continue.
         </p>
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -119,14 +119,14 @@ function PasswordPrompt({ onPasswordCorrect }) {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Password"
-              className="mt-1 block w-full px-4 py-3 border border-slate-300 rounded-lg shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-shadow duration-150 ease-in-out"
+              className="mt-1 block w-full px-4 py-3 border border-primary rounded-lg shadow-sm placeholder-text focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary sm:text-sm transition-shadow duration-150 ease-in-out"
               required
               disabled={isLoading}
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute inset-y-0 right-0 flex items-center px-3 text-slate-500 hover:text-indigo-600"
+              className="absolute inset-y-0 right-0 flex items-center px-3 text-text hover:text-primary-hover"
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? (
@@ -137,14 +137,14 @@ function PasswordPrompt({ onPasswordCorrect }) {
             </button>
           </div>
           {error && (
-            <p className="text-red-500 text-sm text-center font-medium">
+            <p className="text-error text-sm text-center font-medium">
               {error}
             </p>
           )}
           <div>
             <button
               type="submit"
-              className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-md text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-150 ease-in-out disabled:bg-indigo-400 disabled:cursor-not-allowed"
+              className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-md text-sm font-semibold text-white bg-primary hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-150 ease-in-out disabled:bg-primary disabled:cursor-not-allowed"
               disabled={isLoading}
             >
               {isLoading ? (

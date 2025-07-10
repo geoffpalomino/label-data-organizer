@@ -129,14 +129,14 @@ function FileUpload() {
 
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-slate-100 p-4 font-sans">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-bg p-4 font-sans">
       <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-lg">
-        <h2 className="text-3xl font-bold mb-8 text-center text-slate-700">
-          File Organizer
+        <h2 className="text-3xl font-bold mb-8 text-center text-text">
+          Label Data Organizer
         </h2>
         <div
           className={`border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-colors duration-300 ${
-            isDragging ? "border-indigo-600 bg-indigo-50" : "border-slate-300"
+            isDragging ? "border-primary bg-bg" : "border-primary"
           }`}
           onDrop={handleDrop}
           onDragOver={handleDragOver}
@@ -150,12 +150,12 @@ function FileUpload() {
             onChange={handleFileChange}
             accept=".xlsx, .xls, .csv"
           />
-          <p className="text-slate-500">
+          <p className="text-text">
             {file
               ? `Selected: ${file.name}`
               : "Drag & drop a file or click to select"}
           </p>
-           <p className="text-xs text-slate-400 mt-2">
+           <p className="text-xs text-text mt-2">
             Accepts .xlsx, .xls, and .csv files.
           </p>
         </div>
@@ -165,7 +165,7 @@ function FileUpload() {
             <button
               onClick={handleUpload}
               disabled={isUploading}
-              className="w-full sm:w-auto px-8 py-3 rounded-lg font-semibold text-white bg-green-600 hover:bg-green-700 disabled:bg-slate-400"
+              className="w-full sm:w-auto px-8 py-3 rounded-lg font-semibold text-white bg-success hover:bg-green-700 disabled:bg-slate-400"
             >
               {isUploading ? "Processing..." : "Upload and Process File"}
             </button>
@@ -177,7 +177,7 @@ function FileUpload() {
         )}
 
         {successMessage && (
-          <p className="mt-6 text-sm text-center font-medium text-green-600">
+          <p className="mt-6 text-sm text-center font-medium text-success">
             {successMessage}
           </p>
         )}
