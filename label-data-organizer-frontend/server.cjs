@@ -1,32 +1,3 @@
-// // my-excel-app-frontend/server.cjs
-// const express = require("express");
-// const path = require("path");
-
-// const app = express();
-// const port = process.env.PORT || 8080;
-
-// const staticFilesPath = path.join(__dirname, "dist");
-// console.log(`Serving static files from: ${staticFilesPath}`); // Log the path
-
-// app.use(express.static(staticFilesPath));
-
-// // app.get("/*", (req, res) => {
-// //   console.log(`SPA fallback for path: ${req.path}`); // Log which paths hit this
-// //   const indexPath = path.join(staticFilesPath, "index.html");
-// //   res.sendFile(indexPath, (err) => {
-// //     if (err) {
-// //       console.error(`Error sending index.html from ${indexPath}:`, err);
-// //       res.status(err.status || 500).end(); // Send error status
-// //     }
-// //   });
-// // });
-
-// app.listen(port, () => {
-//   console.log(`My Excel App Frontend server listening on port ${port}`);
-// });
-
-/////////////////////
-
 // my-excel-app-frontend/server.cjs
 const express = require("express");
 const path = require("path");
