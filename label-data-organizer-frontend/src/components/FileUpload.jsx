@@ -107,14 +107,25 @@ function FileUpload() {
       const downloadUrl = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = downloadUrl;
-
+      
+      // --- MODIFICATION START ---
+      // Robustly parse the filename from the Content-Disposition header
       const contentDisposition = response.headers["content-disposition"];
-      let fileName = "processed_data.xlsx";
+      let fileName = "processed_data.xlsx"; // Default filename
       if (contentDisposition) {
-        const fileNameMatch = contentDisposition.match(/filename="?(.+)"?/i);
-        if (fileNameMatch && fileNameMatch.length === 2)
-          fileName = fileNameMatch[1];
+        const filenameMatch = contentDisposition.match(/filename="([^"]+)"/);
+        if (filenameMatch && filenameMatch[1]) {
+            fileName = filenameMatch[1];
+        } else {
+            // Fallback for unquoted filenames
+            const unquotedMatch = contentDisposition.match(/filename=([^;]+)/);
+            if (unquotedMatch && unquotedMatch[1]) {
+                fileName = unquotedMatch[1];
+            }
+        }
       }
+      // --- MODIFICATION END ---
+
       link.setAttribute("download", fileName);
       document.body.appendChild(link);
       link.click();
