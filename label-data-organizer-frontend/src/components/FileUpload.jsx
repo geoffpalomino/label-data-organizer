@@ -1,7 +1,23 @@
 import React, { useState, useCallback } from "react";
 import axios from "axios";
 
-// ... (ErrorMessage component remains the same)
+// ErrorMessage component to display structured error feedback
+const ErrorMessage = ({ message, details = [] }) => (
+  <div
+    className="mt-6 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg"
+    role="alert"
+  >
+    <p className="font-bold">{message}</p>
+    {details && details.length > 0 && (
+      <ul className="mt-2 list-disc list-inside text-sm">
+        {details.map((detail, index) => (
+          <li key={index}>{detail}</li>
+        ))}
+      </ul>
+    )}
+  </div>
+);
+
 
 function FileUpload() {
   const [file, setFile] = useState(null);

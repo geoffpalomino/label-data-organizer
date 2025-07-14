@@ -198,8 +198,7 @@ def _process_organized_report(df):
     return True, final_df
 
 def process_spreadsheet(filepath, original_filename):
-    """Main router function to process spreadsheets based on filename."""
-    name_part = os.path.splitext(original_filename)[0]
+    """Main router function to process spreadsheets based on file content (columns)."""
     is_csv = original_filename.lower().endswith('.csv')
     
     try:
@@ -212,29 +211,32 @@ def process_spreadsheet(filepath, original_filename):
         app.logger.error(f"Error reading file {original_filename}: {e}", exc_info=True)
         return False, {"message": f"Could not read the file. It may be corrupted or in an unsupported format.", "details": [str(e)]}
 
-    if name_part.endswith("- StudentParent Information"):
+    df_columns = set(df.columns)
+
+    # Heuristics to determine file type based on columns
+    is_student_parent = {'Parent 1 First Name', 'Student First Name'}.issubset(df_columns)
+    is_ungrouped = {'product_name', 'account_identifier'}.issubset(df_columns)
+    # Check for faculty/staff only if it's not a student/parent file to avoid ambiguity
+    is_faculty_staff = {'First Name', 'Last Name', 'Email', 'ID Number'}.issubset(df_columns) and not is_student_parent
+
+    if is_student_parent:
+        app.logger.info("Detected Student-Parent file type based on columns.")
         return _process_student_parent_info(df)
-    elif name_part.endswith("- FacultyStaff Information"):
+    elif is_faculty_staff:
+        app.logger.info("Detected Faculty-Staff file type based on columns.")
         return _process_faculty_staff_info(df)
-    elif name_part.endswith("- Ungrouped Transactions"):
+    elif is_ungrouped:
+        app.logger.info("Detected Ungrouped Transactions file type based on columns.")
         return _process_organized_report(df)
     else:
-        err_msg = "Invalid file name. Name must end with '- StudentParent Information', '- FacultyStaff Information', or '- Ungrouped Transactions'."
+        err_msg = "Could not determine file type. The column structure does not match any known format."
         app.logger.warning(f"{err_msg} (Filename: '{original_filename}')")
-        return False, {"message": err_msg, "details": [f"Your filename: '{original_filename}'"]}
+        return False, {"message": err_msg, "details": [f"Available columns: {list(df.columns)}"]}
 
 def generate_output_download_name(original_input_basename):
-    """Generates an output filename based on the processing type."""
+    """Generates an output filename by appending ' (Organized)' to the original name."""
     name_part_without_ext = os.path.splitext(original_input_basename)[0]
-
-    if name_part_without_ext.endswith("- Ungrouped Transactions"):
-        base_name = name_part_without_ext.replace("- Ungrouped Transactions", "")
-        final_download_name = f"{base_name} (Organized).xlsx"
-    else:
-        # Default behavior for contact files
-        new_name = f"{name_part_without_ext} - Brevo"
-        final_download_name = f"{new_name}.xlsx"
-
+    final_download_name = f"{name_part_without_ext} (Organized).xlsx"
     app.logger.info(f"Generated output filename: '{final_download_name}' from original '{original_input_basename}'")
     return final_download_name
 
